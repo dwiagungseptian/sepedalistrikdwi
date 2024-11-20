@@ -1,0 +1,91 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+include "koneksi.php";
+
+$sql = "SELECT * FROM products";
+$result = $conn->query($sql);
+
+$products = array();
+while ($row = $result->fetch_assoc()) {
+    $products[] = $row;
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjualan Sepeda Listrik</title>
+    <link rel="stylesheet" href="produk.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+<header>
+    <div class="header-left">
+        <h1>Sepeda Listrik Dwi</h1>
+    </div>
+    <div class="header-right">
+        <nav>
+            <ul>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="profile.php">Profil</a></li>
+                <li><a href="produk.php">Produk</a></li>
+                <li><a href="keranjang.php">Keranjang</a></li>
+                <li><a href="logout.php">Keluar</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div class="search">
+        <form class="form-inline my-2 my-lg-0" action="search.php" method="GET">
+            <input class="form-control mr-sm-2" type="search" placeholder="Cari produk..." aria-label="Search" name="query" value="<?php echo isset($_GET['query']) ? htmlspecialchars($_GET['query']) : ''; ?>">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Cari</button>
+        </form>
+    </div>
+<main>
+    <section class="products">
+        <?php foreach ($products as $product) : ?>
+            <div class="product">
+                <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="Sepeda Listrik <?php echo htmlspecialchars($product['name']); ?>" />
+                <h2><?php echo htmlspecialchars($product['name']); ?></h2>
+                <p><?php echo htmlspecialchars($product['description']); ?></p>
+                <p>Harga: Rp.<?php echo number_format($product['price'], 0, ',', '.'); ?></p>
+                <form action="keranjang.php" method="POST">
+                    <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product['id']); ?>">
+                    <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($product['name']); ?>">
+                    <input type="hidden" name="product_price" value="<?php echo htmlspecialchars($product['price']); ?>">
+                    <input type="hidden" name="product_image" value="<?php echo htmlspecialchars($product['image']); ?>">
+                    
+                    <div class="form-group">
+                        <label for="credit_option_<?php echo $product['id']; ?>">Opsi Kredit:</label>
+                        <select class="form-control" id="credit_option_<?php echo $product['id']; ?>" name="credit_option">
+                            <option value="0">Tanpa Kredit</option>
+                            <option value="3">3 Bulan</option>
+                            <option value="6">6 Bulan</option>
+                            <option value="12">12 Bulan</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" name="beli" class="btn btn-primary">Beli</button>
+                </form>
+            </div>
+        <?php endforeach; ?>
+    </section>
+</main>
+<footer>
+    <p>&copy; 2024 Dwi Agung Septian</p>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<?php
+session_start();
+session_unset();
+session_destroy();
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout</title>
+    <link rel="stylesheet" href="logout.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Anda telah berhasil logout</h1>
+        <p>Terima kasih telah menggunakan layanan kami. Klik tombol di bawah untuk kembali ke halaman home.</p>
+        <a href="index.php" class="button">Kembali ke Home</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+if (isset($_POST['beli'])) {
+    $productId = $_POST['product_id'];
+    $productName = $_POST['product_name'];
+    $productPrice = $_POST['product_price'];
+    $productImage = $_POST['product_image']; 
+    $creditOption = isset($_POST['credit_option']) ? intval($_POST['credit_option']) : 0; 
+
+    if (!isset($_SESSION['keranjang'])) {
+        $_SESSION['keranjang'] = array();
+    }
+
+    $_SESSION['keranjang'][] = array(
+        'id' => $productId,
+        'nama' => $productName,
+        'harga' => $productPrice,
+        'gambar' => $productImage, 
+        'kredit' => $creditOption  
+    );
+}
+?>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="keranjang.css" />
+</head>
+<body>
+    <header class="bg-light p-3 mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <h1 class="h3">Keranjang Belanja</h1>
+            <nav>
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="produk.php">Kembali ke Produk</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <section class="keranjang">
+            <?php
+            
+            if (isset($_SESSION['keranjang']) && count($_SESSION['keranjang']) > 0) {
+
+                foreach ($_SESSION['keranjang'] as $produk) {
+                    echo "<div class='card mb-3'>";
+                    echo "<div class='row no-gutters'>";
+                    echo "<div class='col-md-4'>";
+                    echo "<img src='" . $produk['gambar'] . "' class='card-img' alt='" . $produk['nama'] . "' />";
+                    echo "</div>";
+                    echo "<div class='col-md-8'>";
+                    echo "<div class='card-body'>";
+                    echo "<h5 class='card-title'>" . $produk['nama'] . "</h5>";
+                    echo "<p class='card-text'>Harga: Rp." . number_format($produk['harga'], 0, ',', '.') . "</p>";
+                    
+                    if ($produk['kredit'] > 0) {
+                        echo "<p>Opsi Kredit: " . $produk['kredit'] . " Bulan</p>";
+                    } else {
+                        echo "<p>Opsi Kredit: Tanpa Kredit</p>";
+                    }
+
+                    echo "</div>";
+                    echo "</div>";
+                    echo "</div>";
+                    echo "</div>";
+                }
+
+                echo "<form action='checkout.php' method='POST' class='mt-4'>";
+                echo "<div class='form-group'>";
+                echo "<label for='metode_pembayaran'>Metode Pembayaran:</label>";
+                echo "<select class='form-control' id='metode_pembayaran' name='metode_pembayaran' required>";
+                echo "<option value='bca'>Bank BCA</option>";
+                echo "<option value='bri'>Bank BRI</option>";
+                echo "<option value='mandiri'>Bank Mandiri</option>";
+                echo "<option value='dana'>Dana</option>";
+                echo "</select>";
+                echo "</div>";
+                echo "<div class='form-group'>";
+                echo "<label for='nomor_rekening'>Nomor Rekening:</label>";
+                echo "<input type='text' class='form-control' id='nomor_rekening' name='nomor_rekening' placeholder='Masukkan nomor rekening' required>";
+                echo "</div>";
+                echo "<button type='submit' class='btn btn-primary btn-block'>Checkout</button>";
+                echo "</form>";
+            } else {
+                echo "<p>Keranjang belanja Anda kosong.</p>";
+            }
+            ?>
+        </section>
+    </main>
+    <footer class="footer text-center mt-4">
+        <p>&copy; 2024 Dwi Agung Septian</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
